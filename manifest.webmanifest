@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Capper AI – Whot & Ludo",
-  "short_name": "Capper AI",
+  "name": "Ludowhot – Whot & Ludo",
+  "short_name": "Ludowhot",
   "description": "Stake and play Whot and Ludo against real players or a bot.",
   "lang": "en",
   "dir": "ltr",
@@ -46,34 +46,5 @@
       "purpose": "maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "screenshot-mobile-1.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Open challenges: stake against real players"
-    },
-    {
-      "src": "screenshot-mobile-2.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Play Whot against the Capper bot"
-    },
-    {
-      "src": "screenshot-mobile-3.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Play Ludo with your stake in escrow"
-    },
-    {
-      "src": "screenshot-wide-1.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Capper AI on desktop"
-    }
-  ]
+  "screenshots": []
 }
