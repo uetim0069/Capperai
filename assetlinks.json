@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.vercel.capperai.twa",
+        "sha256_cert_fingerprints": ["F3:42:C7:2E:38:89:6C:FE:16:81:37:69:7C:25:8C:7A:64:D4:FE:A1:F9:7C:F9:69:4E:83:D6:87:0E:E7:72:F2"]
+      }
+    }]
