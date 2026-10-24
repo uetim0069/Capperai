@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Capper AI – Whot &amp; Ludo for stakes</title>
+<meta name="theme-color" content="#0cb35b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Inter','system-ui','sans-serif'],head:['"Barlow Condensed"','Impact','sans-serif']},colors:{sb:{DEFAULT:'#0cb35b',dark:'#078a43',deep:'#04371f',ink:'#1b1f23',bar:'#23282d'}}}}}
+</script>
+<style>
+body{background:#eef2ef;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:3px solid #0cb35b;outline-offset:2px}
+.bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden}
+.bgfx i{position:absolute;border-radius:50%;filter:blur(80px);opacity:.45}
+.bgfx i:nth-child(1){width:520px;height:520px;left:-8%;top:30%;background:#8de3b0;animation:d1 24s ease-in-out infinite alternate}
+.bgfx i:nth-child(2){width:480px;height:480px;right:-6%;top:55%;background:#c9f0a8;animation:d2 30s ease-in-out infinite alternate}
+@keyframes d1{to{transform:translate(35vw,-20vh)}}@keyframes d2{to{transform:translate(-30vw,-25vh)}}
+.hero{background:linear-gradient(120deg,#04371f,#078a43,#0cb35b,#078a43,#04371f);background-size:300% 300%;animation:hg 14s ease infinite;position:relative;overflow:hidden}
+@keyframes hg{50%{background-position:100% 50%}}
+.stripes{position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 90px,transparent 90px 180px);animation:st 12s linear infinite}
+@keyframes st{to{background-position:180px 0}}
+.gtext{background:linear-gradient(100deg,#fff,#c6ff7a,#fff,#9dffc8,#fff);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gt 6s linear infinite}
+@keyframes gt{to{background-position:-250% 0}}
+.gbtn{background:linear-gradient(110deg,#0cb35b,#7ad63a,#0cb35b);background-size:250% 100%;animation:gt 5s linear infinite;color:#fff}
+.promo{background:linear-gradient(110deg,#1b1f23,#0a5c32,#0cb35b,#1b1f23);background-size:300% 100%;animation:gt 10s linear infinite}
+.live{display:inline-flex;align-items:center;gap:5px;color:#e5484d;font-weight:700;font-size:11px}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:#e5484d;animation:pl 1.2s infinite}
+@keyframes pl{50%{opacity:.2}}
+.in{animation:in .6s cubic-bezier(.2,.8,.2,1) both}@keyframes in{from{opacity:0;transform:translateY(12px)}}
+.tab{padding:6px 14px;border-radius:999px;font-weight:700;font-size:13px;background:#fff;border:1px solid #dde4e0}
+.tab.on{background:#0cb35b;border-color:#0cb35b;color:#fff}
+.chip{padding:8px 14px;border-radius:8px;font-weight:700;font-size:13px;border:1px solid #dde4e0;background:#f4f7f5}
+.chip.on{background:#0cb35b;color:#fff;border-color:#0cb35b}
+/* whot */
+.wc,.wcs{width:52px;height:76px;border-radius:10px;background:#fff;border:2px solid #cfd8d3;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;line-height:1.1;transition:transform .15s}
+.wc b,.wcs b{font-size:20px}.wc span,.wcs span{font-size:18px}
+.wc.pl{border-color:#0cb35b;transform:translateY(-8px);box-shadow:0 6px 14px rgba(12,179,91,.35);cursor:pointer}
+.wc:not(.pl){opacity:.55}
+.cb{width:14px;height:22px;border-radius:3px;background:repeating-linear-gradient(45deg,#0a5c32,#0a5c32 3px,#0cb35b 3px,#0cb35b 6px);border:1px solid #fff;margin-left:-6px}
+.deck{width:52px;height:76px;border-radius:10px;background:repeating-linear-gradient(45deg,#0a5c32,#0a5c32 4px,#0cb35b 4px,#0cb35b 8px);color:#fff;font-size:11px;font-weight:700;border:2px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.25)}
+.sp{width:40px;height:40px;border-radius:10px;background:#fff;border:2px solid #cfd8d3;font-size:20px;font-weight:800}
+.die{width:56px;height:56px;border-radius:14px;background:#fff;border:2px solid #1b1f23;display:grid;place-items:center;font-family:'Barlow Condensed';font-size:34px;font-weight:800}
+.toast{transition:opacity .3s}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body class="font-sans text-sb-ink">
+<div class="bgfx" aria-hidden="true"><i></i><i></i></div>
+
+<header class="sticky top-0 z-40 bg-sb-bar text-white shadow-lg">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+    <a href="#" class="flex items-center gap-2 font-head text-2xl font-extrabold italic"><span class="grid h-8 w-8 place-items-center rounded-lg bg-sb text-lg not-italic">C</span>CAPPER<span class="text-sb">AI</span></a>
+    <div class="flex items-center gap-2 text-sm font-bold">
+      <span class="rounded-lg bg-white/10 px-3 py-1.5">Wallet <span id="bal" class="text-sb">₦5,000</span></span>
+      <button class="inst gbtn rounded-lg px-3 py-1.5">⬇ Install app</button>
+    </div>
+  </div>
+</header>
+
+<section class="hero text-white">
+  <div class="stripes"></div>
+  <div class="relative mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 md:grid-cols-[1.2fr_.8fr] md:py-16">
+    <div class="in">
+      <span class="inline-flex items-center gap-2 rounded-full bg-black/25 px-3 py-1 text-xs font-bold"><span class="live !text-white"></span><span id="online">1,248</span> players online</span>
+      <h1 class="mt-4 font-head text-6xl font-extrabold uppercase italic leading-[.92] sm:text-8xl"><span class="gtext">Whot &amp; Ludo. Real players. Real stakes.</span></h1>
+      <p class="mt-4 max-w-md text-lg text-white/85">Challenge anyone, put your stake in escrow, and winner takes the pot. No players free? Play the bot and still stake.</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a href="#lobby" class="rounded-lg bg-white px-7 py-3.5 font-bold text-sb-dark shadow-xl transition hover:scale-[1.03]">Find a player</a>
+        <a href="#bot" class="rounded-lg border-2 border-white/60 px-7 py-3.5 font-bold hover:bg-white/10">Play the bot</a>
+      </div>
+    </div>
+    <aside class="in rounded-2xl bg-white/95 p-5 text-sb-ink shadow-2xl" style="animation-delay:.15s">
+      <div class="text-xs font-bold uppercase tracking-wide text-gray-500">Your wallet</div>
+      <div id="bal2" class="font-head text-5xl font-extrabold">₦5,000</div>
+      <div class="mt-2 flex justify-between text-sm"><span class="text-gray-500">In escrow</span><b id="esc">₦0</b></div>
+      <button id="fund" class="mt-4 w-full rounded-lg border-2 border-sb py-2.5 text-sm font-bold text-sb-dark hover:bg-sb/10">+ Add ₦5,000 demo funds</button>
+      <p class="mt-2 text-[11px] leading-snug text-gray-500">Demo mode: balances and opponents are simulated until payments and the game server are connected.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- P2P lobby -->
+<section id="lobby" class="mx-auto max-w-6xl scroll-mt-16 px-4 py-12">
+  <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <h2 class="font-head text-4xl font-extrabold uppercase italic">Open challenges</h2>
+    <div class="flex gap-2" id="tabs"><button class="tab on" data-f="All">All</button><button class="tab" data-f="Whot">🃏 Whot</button><button class="tab" data-f="Ludo">🎲 Ludo</button></div>
+  </div>
+  <div class="grid gap-5 md:grid-cols-[1.4fr_.6fr]">
+    <div class="overflow-hidden rounded-2xl bg-white shadow-xl shadow-black/5">
+      <div class="flex items-center justify-between bg-sb-bar px-4 py-2 text-xs font-bold text-white/80"><span>Player vs player · live</span><span class="live">LIVE</span></div>
+      <div id="lobby-list"></div>
+    </div>
+    <div class="space-y-4">
+      <div class="rounded-2xl border-2 border-sb bg-white p-5 shadow-xl">
+        <h3 class="font-head text-2xl font-bold uppercase leading-none text-sb-dark">Post a challenge</h3>
+        <label class="mt-3 block text-xs font-semibold text-gray-500" for="cg">Game</label>
+        <select id="cg" class="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 font-semibold"><option>Whot</option><option>Ludo</option></select>
+        <label class="mt-3 block text-xs font-semibold text-gray-500" for="cs">Stake (₦)</label>
+        <input id="cs" type="number" min="100" step="100" value="500" class="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 font-semibold">
+        <p class="mt-2 text-xs text-gray-500">Winner gets <b id="cw" class="text-sb-dark">₦900</b> (10% fee on the pot)</p>
+        <button id="post" class="gbtn mt-3 w-full rounded-lg py-3 font-bold uppercase tracking-wide shadow-lg">Post challenge</button>
+      </div>
+      <ol class="space-y-2 rounded-2xl bg-sb-bar p-5 text-sm text-white/80">
+        <li class="font-head text-xl font-bold uppercase text-white">How the money moves</li>
+        <li>1. Both players' stakes lock in escrow.</li>
+        <li>2. The server runs the game. Nobody can cheat.</li>
+        <li>3. Winner is paid to their wallet instantly.</li>
+        <li>4. Withdraw to your own bank account.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- bot -->
+<section id="bot" class="mx-auto max-w-6xl scroll-mt-16 px-4 pb-12">
+  <div class="promo grid items-center gap-6 rounded-3xl p-7 text-white shadow-xl md:grid-cols-[1fr_auto]">
+    <div>
+      <span class="rounded-full bg-black/30 px-3 py-1 text-xs font-bold">🤖 Bot match</span>
+      <h2 class="mt-3 font-head text-4xl font-extrabold uppercase italic leading-none">No opponent? Play the bot.</h2>
+      <p class="mt-2 max-w-lg text-sm text-white/85">Same stakes, same payout. The bot follows the same rules as a person, with no hidden advantage. It is always labelled as a bot.</p>
+      <div class="mt-4 flex flex-wrap gap-2" id="bg"><button class="chip on" data-g="Whot">🃏 Whot</button><button class="chip" data-g="Ludo">🎲 Ludo</button></div>
+      <div class="mt-2 flex flex-wrap gap-2 text-sb-ink" id="bs"><button class="chip" data-s="200">₦200</button><button class="chip on" data-s="500">₦500</button><button class="chip" data-s="1000">₦1,000</button><button class="chip" data-s="2000">₦2,000</button></div>
+    </div>
+    <div class="text-center">
+      <div class="text-xs font-bold text-white/70">You win</div>
+      <div id="bw" class="font-head text-5xl font-extrabold">₦900</div>
+      <button id="botgo" class="mt-3 rounded-lg bg-white px-7 py-3 font-bold text-sb-dark shadow-xl transition hover:scale-[1.04]">Play vs Bot</button>
+    </div>
+  </div>
+</section>
+
+<!-- install -->
+<section id="install" class="mx-auto max-w-6xl scroll-mt-16 px-4 pb-14">
+  <div class="rounded-3xl border-2 border-sb bg-white p-7 shadow-xl md:flex md:items-center md:justify-between md:gap-8">
+    <div>
+      <h2 class="font-head text-4xl font-extrabold uppercase italic leading-none text-sb-dark">Get the app</h2>
+      <p class="mt-2 max-w-md text-sm text-gray-600">Play full screen from your home screen. Install it straight from this page, or download the Android APK.</p>
+    </div>
+    <div class="mt-5 flex flex-col gap-3 sm:flex-row md:mt-0">
+      <button class="inst gbtn rounded-lg px-7 py-3.5 font-bold shadow-lg">⬇ Install app</button>
+      <a href="capper-ai.apk" download class="rounded-lg bg-sb-bar px-7 py-3.5 text-center font-bold text-white hover:bg-black">🤖 Download Android APK</a>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-sb-bar px-4 py-10 text-xs leading-relaxed text-white/55">
+  <div class="mx-auto max-w-6xl"><p class="font-head text-xl font-extrabold italic text-white">CAPPER<span class="text-sb">AI</span></p>
+  <p class="mt-3 max-w-3xl">18+ or the legal age in your region. Stake only what you can afford to lose. If gambling is affecting you, contact a local support service. © 2026 Capper AI</p></div>
+</footer>
+
+<!-- arena -->
+<div id="arena" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-3">
+  <div class="max-h-[95vh] w-full max-w-md overflow-y-auto rounded-2xl bg-[#f6faf7] shadow-2xl">
+    <div class="flex items-start justify-between bg-sb-bar px-4 py-3 text-white">
+      <div><div id="mt" class="font-head text-2xl font-bold uppercase leading-none"></div><div id="ms" class="mt-1 text-xs text-white/70"></div></div>
+      <button id="leave" class="rounded bg-white/10 px-3 py-1 text-xs font-bold hover:bg-white/20">Leave</button>
+    </div>
+    <div class="relative p-4"><div id="board" class="min-h-[380px]"></div>
+      <div id="res" class="absolute inset-0 hidden flex-col items-center justify-center gap-3 bg-white/95 p-6 text-center">
+        <div id="rt" class="font-head text-5xl font-extrabold uppercase italic text-sb-dark"></div>
+        <div id="rb" class="text-sm leading-relaxed"></div>
+        <div class="flex gap-2"><button id="again" class="gbtn rounded-lg px-6 py-2.5 font-bold">Rematch</button><button id="done" class="rounded-lg border border-gray-300 px-6 py-2.5 font-bold">Close</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- install help -->
+<div id="how" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 p-4">
+  <div class="w-full max-w-sm rounded-2xl bg-white p-6 text-sm shadow-2xl">
+    <h3 class="font-head text-3xl font-bold uppercase text-sb-dark">Install Capper AI</h3>
+    <p class="mt-3"><b>Android (Chrome):</b> tap the ⋮ menu, then <i>Install app</i> or <i>Add to Home screen</i>. Or download the APK below.</p>
+    <p class="mt-2"><b>iPhone (Safari):</b> tap Share, then <i>Add to Home Screen</i>.</p>
+    <p class="mt-2 text-xs text-gray-500">The one-tap install needs the site to be served over https.</p>
+    <button onclick="document.getElementById('how').classList.add('hidden')" class="mt-4 w-full rounded-lg bg-sb-bar py-2.5 font-bold text-white">Got it</button>
+  </div>
+</div>
+<div id="toast" class="toast pointer-events-none fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-sb-bar px-5 py-3 text-sm font-semibold text-white opacity-0 shadow-xl"></div>
+
+<script>
+const $=id=>document.getElementById(id),fmt=n=>'₦'+Math.round(n).toLocaleString();
+const pick=a=>a[Math.random()*a.length|0];
+let bal=5000,match=null,cur=null;
+function upd(){$('bal').textContent=$('bal2').textContent=fmt(bal);$('esc').textContent=fmt(match?match.stake*2:0)}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.remove('opacity-0');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.add('opacity-0'),2600)}
+
+/* ================= WHOT ================= */
+const Whot=(()=>{
+ const SH=['●','▲','✚','■','★'],CL={'●':'#e5484d','▲':'#0a9f50','✚':'#2563eb','■':'#d97706','★':'#7c3aed',W:'#111'};
+ let deck,disc,H,top,turn,pend,want,over,cb,box,sel,msg,tm;
+ const shuf=a=>{for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+ function take(h,n){for(let i=0;i<n;i++){if(!deck.length){const t=disc.pop();deck=shuf(disc);disc=[t]}if(deck.length)h.push(deck.pop())}}
+ const ok=c=>pend?c.n===2:c.s==='W'||(want?c.s===want:(c.s===top.s||c.n===top.n));
+ const card=(c,i,cls,tag='button')=>`<${tag} data-i="${i}" class="${cls}" style="color:${CL[c.s]}"><b>${c.s==='W'?'W':c.n}</b><span>${c.s==='W'?'★':c.s}</span></${tag}>`;
+ function init(el,done){box=el;cb=done;over=false;sel=false;pend=0;want=null;msg='Your move: match the shape or number';
+  deck=[];SH.forEach(s=>[1,2,3,4,5,7,8,10,11,12,13,14].forEach(n=>deck.push({s,n})));for(let i=0;i<5;i++)deck.push({s:'W',n:20});shuf(deck);
+  H=[[],[]];take(H[0],6);take(H[1],6);do{top=deck.pop()}while(top.s==='W'||[1,2,8,14].includes(top.n));disc=[top];turn=0;
+  box.onclick=click;draw()}
+ function draw(){
+  const mine=turn===0&&!over&&!sel;
+  box.innerHTML=`<div class="text-center text-xs font-bold text-gray-500">${match.mode==='bot'?'🤖 Capper Bot':match.opp}: ${H[1].length} cards</div>
+  <div class="my-2 flex justify-center pl-1.5">${H[1].map(()=>'<i class="cb"></i>').join('')}</div>
+  <div class="my-4 flex items-center justify-center gap-5"><button id="wd" class="deck">DRAW<br>${pend?'+'+pend:''}</button>${card(top,-1,'wcs','div')}<div class="w-9 text-center text-2xl" style="color:${want?CL[want]:'#bbb'}">${want||''}</div></div>
+  <div class="text-center text-sm font-bold text-sb-dark">${msg}</div>
+  ${sel?`<div class="my-3 flex justify-center gap-2">${SH.map(s=>`<button class="sp" data-s="${s}" style="color:${CL[s]}">${s}</button>`).join('')}</div>`:''}
+  <div class="mt-4 flex flex-wrap justify-center gap-1.5">${H[0].map((c,i)=>card(c,i,'wc '+(mine&&ok(c)?'pl':''))).join('')}</div>
+  <p class="mt-4 text-center text-[11px] text-gray-500">1 and 8: play again · 2: pick two · 14: opponent picks one · Whot: choose a shape</p>`}
+ function click(e){if(over||turn!==0)return;
+  const s=e.target.closest('.sp');
+  if(s&&sel){want=s.dataset.s;sel=false;turn=1;msg='You chose '+want;draw();next();return}
+  if(sel)return;
+  if(e.target.closest('#wd')){const n=pend||1;take(H[0],n);msg=pend?'You picked '+pend+' cards':'You drew a card';pend=0;turn=1;draw();next();return}
+  const b=e.target.closest('.wc');if(!b)return;const c=H[0][+b.dataset.i];if(c&&ok(c))play(0,c)}
+ function play(w,c){
+  const h=H[w],o=1-w,nm=w?'Opponent':'You';h.splice(h.indexOf(c),1);disc.push(c);top=c;want=null;
+  if(!h.length){over=true;msg=nm+' finished all cards!';draw();setTimeout(()=>cb(w===0),900);return}
+  let again=false;msg=nm+' played';
+  if(c.n===2){pend+=2;msg=nm+' played Pick Two'}
+  else if(c.n===1||c.n===8){again=true;msg=nm+' play'+(w?'s':'')+' again'}
+  else if(c.n===14){take(H[o],1);again=true;msg=nm+' played General Market'}
+  else if(c.n===20){
+   if(w===0){sel=true;msg='Choose a shape';draw();return}
+   const k={};H[1].forEach(x=>{if(x.s!=='W')k[x.s]=(k[x.s]||0)+1});want=Object.keys(k).sort((a,b)=>k[b]-k[a])[0]||SH[0];msg='Opponent chose '+want}
+  turn=again?w:o;draw();next()}
+ function next(){clearTimeout(tm);if(!over&&turn===1)tm=setTimeout(bot,1000)}
+ function bot(){if(over||turn!==1)return;const pl=H[1].filter(ok);
+  if(pl.length)play(1,pl.find(x=>x.s!=='W')||pl[0]);
+  else{const n=pend||1;take(H[1],n);msg=pend?'Opponent picked '+pend:'Opponent drew a card';pend=0;turn=0;draw()}}
+ return{init,stop(){over=true;clearTimeout(tm)}}
+})();
+
+/* ================= LUDO (quick, 1 token each) ================= */
+const Ludo=(()=>{
+ let P,turn,over,cb,box,busy,die,msg,tm;
+ const S=[0,26],SAFE=[0,13,26,39],R=110,C=150,COL=['#0cb35b','#e5484d'];
+ const xy=(a,r=R)=>{const t=a/52*2*Math.PI-Math.PI/2;return[C+r*Math.cos(t),C+r*Math.sin(t)]};
+ const at=(p,q)=>q<0?xy(S[p],R+26):q<=50?xy((S[p]+q)%52):q<=55?xy((S[p]+50)%52,R-18*(q-50)):[C,C];
+ function init(el,done){box=el;cb=done;P=[-1,-1];turn=0;over=false;busy=false;die=0;msg='Roll a 6 to leave base. Your turn.';box.onclick=e=>{if(e.target.closest('#lr')&&turn===0&&!busy&&!over)go(0)};draw()}
+ function draw(){
+  let s='<svg viewBox="0 0 300 300" class="mx-auto w-full max-w-[300px]" role="img" aria-label="Ludo board">';
+  for(let a=0;a<52;a++){const[x,y]=xy(a);s+=`<circle cx="${x}" cy="${y}" r="${S.includes(a)?6.5:4.5}" fill="${a===S[0]?COL[0]:a===S[1]?COL[1]:'#dfe6e2'}" stroke="${SAFE.includes(a)?'#8a958f':'none'}"/>`}
+  [0,1].forEach(p=>{for(let q=51;q<=55;q++){const[x,y]=at(p,q);s+=`<circle cx="${x}" cy="${y}" r="4.5" fill="${COL[p]}" opacity=".35"/>`}});
+  s+=`<circle cx="${C}" cy="${C}" r="11" fill="#fff" stroke="#0cb35b" stroke-width="3"/>`;
+  [0,1].forEach(p=>{const[x,y]=at(p,P[p]),off=P[0]===P[1]&&P[0]>=0?(p?4:-4):0;s+=`<circle cx="${x+off}" cy="${y}" r="9" fill="${COL[p]}" stroke="#fff" stroke-width="2.5"/>`});
+  s+='</svg>';
+  box.innerHTML=s+`<div class="mt-2 flex items-center justify-center gap-4"><div class="die">${die||'–'}</div><button id="lr" class="gbtn rounded-lg px-6 py-3 font-bold ${turn!==0||busy||over?'opacity-40':''}">Roll dice</button></div>
+  <div class="mt-3 text-center text-sm font-bold text-sb-dark">${msg}</div>
+  <p class="mt-2 text-center text-[11px] text-gray-500"><span style="color:${COL[0]}">●</span> You · <span style="color:${COL[1]}">●</span> ${match.mode==='bot'?'Bot':match.opp} · Roll 6 to leave base and roll again · Land on a rival to send them home · Grey rings are safe</p>`}
+ function go(p){busy=true;die=1+(Math.random()*6|0);msg=(p?'Opponent':'You')+' rolled '+die;draw();
+  tm=setTimeout(()=>{if(over)return;let moved=false;const q=P[p];
+   if(q<0){if(die===6){P[p]=0;moved=true}}else if(q+die<=56){P[p]=q+die;moved=true}
+   if(moved&&P[p]<=50){const a=(S[p]+P[p])%52,o=1-p;if(P[o]>=0&&P[o]<=50&&(S[o]+P[o])%52===a&&!SAFE.includes(a)){P[o]=-1;msg+=' · sent home!'}}
+   if(!moved)msg+=' · no move';
+   if(P[p]===56){over=true;msg=(p?'Opponent':'You')+' reached home!';draw();setTimeout(()=>cb(p===0),900);return}
+   turn=moved&&die===6?p:1-p;busy=false;draw();
+   if(turn===1)tm=setTimeout(()=>go(1),1000)},800)}
+ return{init,stop(){over=true;clearTimeout(tm)}}
+})();
+
+/* ================= MATCH / WALLET ================= */
+function startMatch(game,stake,opp,mode){
+ if(match)return;if(bal<stake){toast('Not enough balance. Add funds first.');return}
+ bal-=stake;match={game,stake,opp,mode};upd();
+ $('arena').classList.replace('hidden','flex');$('res').classList.add('hidden');$('res').classList.remove('flex');
+ $('mt').textContent=game+' · '+(mode==='bot'?'vs Capper Bot':'vs '+opp);
+ $('ms').textContent='Stake '+fmt(stake)+' each · Pot '+fmt(stake*2)+' in escrow';
+ cur=game==='Whot'?Whot:Ludo;cur.init($('board'),finish)}
+function finish(win){
+ if(!match)return;const m=match,pot=m.stake*2,fee=pot*.1,pay=win?pot-fee:0;
+ cur.stop();bal+=pay;match=null;upd();
+ $('res').classList.remove('hidden');$('res').classList.add('flex');
+ $('rt').textContent=win?'You won! 🎉':'You lost';
+ $('rb').innerHTML=win?`Pot ${fmt(pot)}<br>Platform fee (10%) –${fmt(fee)}<br><b class="text-lg text-sb-dark">${fmt(pay)} paid to your wallet</b>`:`Your ${fmt(m.stake)} stake was paid to ${m.mode==='bot'?'the house':m.opp}.`;
+ $('again').onclick=()=>{closeArena();startMatch(m.game,m.stake,m.opp,m.mode)}}
+function closeArena(){$('arena').classList.replace('flex','hidden')}
+$('leave').onclick=()=>{if(match){if(confirm('Leave now? You forfeit your stake.'))finish(false)}else closeArena()};
+$('done').onclick=closeArena;
+$('fund').onclick=()=>{bal+=5000;upd();toast('Demo funds added')};
+
+/* ================= LOBBY ================= */
+const NM=['Tunde_W','Ada_King','Chidi99','Zainab_L','Ola_Whot','Emeka_X','Bisi_Pro','Kemi_Q','Seyi_01','Ngozi_B'],ST=[200,500,1000,2000,5000];
+let CH=[],cid=0,filt='All';
+function addCh(){CH.unshift({id:++cid,name:pick(NM),game:Math.random()<.5?'Whot':'Ludo',stake:pick(ST)});while(CH.length>8){const i=CH.findLastIndex(c=>!c.mine);if(i<0)break;CH.splice(i,1)}}
+for(let i=0;i<7;i++)addCh();
+function renderLobby(){
+ const L=CH.filter(c=>filt==='All'||c.game===filt);
+ $('lobby-list').innerHTML=L.length?L.map(c=>`<div class="flex items-center gap-3 border-b border-gray-100 px-4 py-3 last:border-0 ${c.mine?'bg-sb/10':''}">
+  <div class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-sb-bar font-bold text-white">${c.name[0]}</div>
+  <div class="min-w-0 flex-1"><div class="truncate font-semibold">${c.name}</div><div class="text-xs text-gray-500">${c.game==='Whot'?'🃏':'🎲'} ${c.game} · stake ${fmt(c.stake)}</div></div>
+  <div class="hidden text-right text-xs text-gray-500 sm:block">Win<br><b class="text-sm text-sb-dark">${fmt(c.stake*1.8)}</b></div>
+  ${c.mine?'<span class="live !text-sb-dark">Waiting…</span>':`<button data-id="${c.id}" class="acc gbtn rounded-lg px-4 py-2 text-sm font-bold">Accept</button>`}</div>`).join(''):'<p class="p-6 text-center text-gray-400">No open challenges. Post one!</p>'}
+$('lobby-list').onclick=e=>{const b=e.target.closest('.acc');if(!b)return;const c=CH.find(x=>x.id==+b.dataset.id);if(!c||match)return;
+ if(bal<c.stake){toast('Not enough balance');return}CH=CH.filter(x=>x!==c);renderLobby();startMatch(c.game,c.stake,c.name,'p2p')};
+$('tabs').onclick=e=>{const b=e.target.closest('.tab');if(!b)return;filt=b.dataset.f;[...$('tabs').children].forEach(x=>x.classList.toggle('on',x===b));renderLobby()};
+const cw=()=>$('cw').textContent=fmt((+$('cs').value||0)*1.8);$('cs').oninput=cw;cw();
+$('post').onclick=()=>{const g=$('cg').value,s=+$('cs').value;if(!(s>=100)){toast('Minimum stake is ₦100');return}if(bal<s){toast('Not enough balance');return}
+ const c={id:++cid,name:'You',game:g,stake:s,mine:true};CH.unshift(c);renderLobby();toast('Challenge posted. Waiting for an opponent…');
+ setTimeout(()=>{CH=CH.filter(x=>x!==c);renderLobby();startMatch(g,s,pick(NM),'p2p')},3500)};
+renderLobby();
+setInterval(()=>{const i=CH.findIndex(c=>!c.mine);if(i>=0&&Math.random()<.6)CH.splice(i+Math.floor(Math.random()*3),1);addCh();renderLobby()},4500);
+let on=1248;setInterval(()=>{on+=Math.round((Math.random()-.45)*14);$('online').textContent=on.toLocaleString()},2500);
+
+/* ================= BOT PANEL ================= */
+let bgame='Whot',bstake=500;
+const bw=()=>$('bw').textContent=fmt(bstake*1.8);
+$('bg').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;bgame=b.dataset.g;[...$('bg').children].forEach(x=>x.classList.toggle('on',x===b))};
+$('bs').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;bstake=+b.dataset.s;[...$('bs').children].forEach(x=>x.classList.toggle('on',x===b));bw()};
+$('botgo').onclick=()=>startMatch(bgame,bstake,'Capper Bot','bot');bw();
+
+/* ================= INSTALL (PWA + APK) ================= */
+let dip=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e});
+addEventListener('appinstalled',()=>{dip=null;toast('Capper AI installed')});
+document.querySelectorAll('.inst').forEach(b=>b.onclick=async()=>{
+ if(dip){dip.prompt();await dip.userChoice;dip=null}else $('how').classList.replace('hidden','flex')});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
