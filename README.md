@@ -1,6 +1,6 @@
-# Capperai
+# Ludowhot
 
-Capperai is a lightweight web app and PWA for playing Whot and Ludo-style matches with real-money-style stakes in a demo environment. The project includes a landing page, challenge lobby, bot match flow, wallet UI, Android APK download, and a mobile-friendly install experience.
+Ludowhot is a lightweight web app and PWA for playing Whot and Ludo-style matches with real-money-style stakes in a demo environment. The project includes a landing page, challenge lobby, bot match flow, wallet UI, Android APK download, and a mobile-friendly install experience.
 
 ## Overview
 
@@ -10,7 +10,7 @@ This repository contains a front-end-only game app centered around:
 - Playing Whot and Ludo matches
 - Simulated wallet and escrow flow
 - Bot matches at configurable stakes
-- Installable web app behavior via a manifest and service worker
+- PWA install support for supported browsers
 - Android APK bundle for direct download
 
 The app is designed as a static web experience, with the main gameplay logic split across client-side JavaScript files.
@@ -85,4 +85,3 @@ Contributions are welcome. For small changes, open a pull request with a clear d
 ## Screenshots
 
 The repository includes multiple image assets showcasing the app on mobile and desktop layouts.
-
