@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin | Ludowhot</title>
+<meta name="theme-color" content="#0cb35b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Figtree','system-ui','sans-serif'],head:['Archivo','system-ui','sans-serif']},colors:{sb:{DEFAULT:'#0cb35b',dark:'#066a34',deep:'#052e1a',ink:'#14201a',bar:'#18241d'}}}}}
+</script>
+<style>
+body{background:#f2f5f0}.gbtn{background:#07813f;color:#fff}.gbtn:hover{background:#066a34}:focus-visible{outline:3px solid #0a9a4e;outline-offset:2px}
+.card{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:16px}
+.btn{border-radius:8px;padding:8px 14px;font-weight:700;font-size:14px;border:1px solid #cbd5d0}.btn.red{color:#b42318;border-color:#f0b4ae}
+</style>
+</head>
+<body class="font-sans text-sb-ink">
+<div id="gate" class="mx-auto max-w-sm px-4 py-16"><div class="card"><h1 class="font-head text-2xl font-extrabold">Ludowhot admin</h1><p class="mt-1 text-sm text-gray-600">Enter your admin token.</p>
+<label class="sr-only" for="tok">Admin token</label><input id="tok" type="password" autocomplete="off" class="mt-3 w-full rounded-lg border border-gray-300 px-3 py-2.5"><p id="gerr" role="alert" class="mt-2 min-h-[1.25rem] text-sm font-semibold text-red-700"></p><button id="open" class="gbtn mt-1 w-full rounded-lg py-3 font-bold">Open</button></div></div>
+<div id="app" class="hidden"><header class="bg-sb-bar text-white"><div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3"><b class="font-head text-xl">LUDO<span class="text-sb">WHOT</span> admin</b><div class="flex gap-2 text-sm font-bold"><span id="mode" class="rounded bg-white/10 px-2 py-1"></span><button id="refresh" class="rounded px-3 py-1 hover:bg-white/10">Refresh</button><button id="lock" class="rounded px-3 py-1 hover:bg-white/10">Lock</button></div></div></header>
+<main class="mx-auto max-w-5xl space-y-6 px-4 py-6"><div id="stats" class="grid grid-cols-2 gap-3 md:grid-cols-3"></div>
+<section><h2 class="font-head text-xl font-bold">Deposits to confirm <span id="n-dep" class="text-sb-dark"></span></h2><p class="text-sm text-gray-600">Only approve after the money is in your bank account. Match the reference code to the transfer narration.</p><div id="dep" class="mt-3 space-y-3"></div></section>
+<section><h2 class="font-head text-xl font-bold">Withdrawals to pay <span id="n-wd" class="text-sb-dark"></span></h2><p class="text-sm text-gray-600">Send the money first, then tap Mark as paid. Reject refunds the player.</p><div id="wd" class="mt-3 space-y-3"></div></section>
+<section><h2 class="font-head text-xl font-bold">Identity checks (KYC) <span id="n-kyc" class="text-sb-dark"></span></h2><p class="text-sm text-gray-600">Players cannot withdraw until you approve them.</p><div id="kyc" class="mt-3 space-y-2"></div></section>
+<section><h2 class="font-head text-xl font-bold">Players</h2><label class="sr-only" for="q">Search players</label><input id="q" placeholder="Search name or email" class="mt-2 w-full rounded-lg border border-gray-300 px-3 py-2.5"><div id="pl" class="mt-3 space-y-2"></div></section>
+<section><h2 class="font-head text-xl font-bold">Recent admin activity</h2><ul id="rec" class="mt-3 space-y-1 text-sm"></ul></section></main></div>
+<script>
+const $=id=>document.getElementById(id),fmt=n=>'₦'+Math.round(n).toLocaleString(),E=s=>String(s??'').replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+let T=sessionStorage.getItem('lw_admin')||'',D=null;
+const ago=t=>{const m=Math.round((Date.now()-t)/6e4);return m<1?'just now':m<60?m+' min ago':m<1440?Math.round(m/60)+' h ago':Math.round(m/1440)+' d ago'};
+async function api(m,u,b){const r=await fetch(u,{method:m,headers:{'content-type':'application/json','x-admin-token':T},body:b?JSON.stringify(b):undefined});const d=await r.json().catch(()=>({}));
+ if(!r.ok){if(r.status===403||r.status===429)lock(d.error);throw Error(d.error||'Request failed')}return d}
+function lock(msg){T='';sessionStorage.removeItem('lw_admin');$('app').classList.add('hidden');$('gate').classList.remove('hidden');$('gerr').textContent=msg||''}
+async function load(){D=await api('GET','/api/admin/overview');$('gate').classList.add('hidden');$('app').classList.remove('hidden');draw()}
+const kycB=k=>`<span class="rounded px-1.5 py-0.5 text-xs font-bold ${k==='approved'?'bg-green-100 text-green-800':'bg-amber-100 text-amber-900'}">KYC ${E(k)}</span>`;
+function draw(){const d=D,s=d.stats;document.title=`(${d.deposits.length+d.withdrawals.length}) Admin | Ludowhot`;$('mode').textContent=d.live?(d.manual?'Real money, manual':'Real money, Paystack'):'Demo mode';
+ $('stats').innerHTML=[['Players',s.players],['Player balances',fmt(s.balances)],['In escrow',fmt(s.escrow)],['Fees earned',fmt(s.fees)],['Deposits (24h)',fmt(s.depositsToday)],['Withdrawals (24h)',fmt(s.withdrawalsToday)]].map(([a,b])=>`<div class="card"><div class="text-xs font-semibold text-gray-600">${a}</div><div class="font-head text-2xl font-extrabold">${b}</div></div>`).join('');
+ $('n-dep').textContent=d.deposits.length?`(${d.deposits.length})`:'';$('n-wd').textContent=d.withdrawals.length?`(${d.withdrawals.length})`:'';$('n-kyc').textContent=d.kyc.length?`(${d.kyc.length})`:'';
+ $('dep').innerHTML=d.deposits.map(x=>`<div class="card" data-id="${E(x.id)}" data-name="${E(x.name)}"><div class="flex flex-wrap items-center justify-between gap-2"><div><b>${E(x.name)}</b> <span class="text-sm text-gray-600">${E(x.email)}</span><div class="text-sm text-gray-600">${ago(x.t)}, ${x.status==='submitted'?'<b class="text-sb-dark">player says they have paid</b>':'waiting for player to pay'}</div></div><div class="font-mono text-lg font-bold">${E(x.ref)}</div></div>
+ <div class="mt-3 flex flex-wrap items-center gap-2"><label class="text-sm font-semibold" for="a-${E(x.id)}">Amount received</label><input id="a-${E(x.id)}" class="damt w-32 rounded-lg border border-gray-300 px-3 py-2" type="number" value="${x.amt}"><button class="btn gbtn dap">Approve</button><button class="btn red drj">Reject</button></div></div>`).join('')||'<p class="text-gray-500">Nothing waiting.</p>';
+ $('wd').innerHTML=d.withdrawals.map(x=>`<div class="card" data-id="${E(x.id)}" data-name="${E(x.name)}" data-amt="${x.amt}"><div class="flex flex-wrap items-center justify-between gap-2"><div><b>${E(x.name)}</b> <span class="text-sm text-gray-600">${E(x.email)}</span> ${kycB(x.kyc)}<div class="text-sm text-gray-600">${ago(x.t)}</div></div><div class="font-head text-2xl font-extrabold">${fmt(x.amt)}</div></div>
+ <div class="mt-2 rounded-lg bg-gray-50 p-3 text-sm">${x.bank?`${E(x.bank.bankName)}<br><b class="font-mono text-base">${E(x.bank.number||'')}</b> <button class="btn cpy ml-1 !px-2 !py-0.5 text-xs" data-n="${E(x.bank.number||'')}">Copy</button><br>${E(x.bank.name)}`:'No bank details'}</div>
+ <div class="mt-3 flex gap-2"><button class="btn gbtn wpd">Mark as paid</button><button class="btn red wrj">Reject and refund</button></div></div>`).join('')||'<p class="text-gray-500">Nothing to pay.</p>';
+ $('kyc').innerHTML=d.kyc.map(x=>`<div class="card flex flex-wrap items-center justify-between gap-2" data-email="${E(x.email)}"><span><b>${E(x.name)}</b> <span class="text-sm text-gray-600">${E(x.email)}</span></span><span class="flex gap-2"><button class="btn gbtn kap">Approve</button><button class="btn red krj">Reject</button></span></div>`).join('')||'<p class="text-gray-500">No one waiting.</p>';
+ players();$('rec').innerHTML=d.recent.map(r=>`<li><span class="text-gray-500">${ago(r.t)}</span> ${E(r.a)} <b>${E(r.target)}</b> <span class="text-gray-600">${E(r.note)}</span></li>`).join('')||'<li class="text-gray-500">No activity yet.</li>'}
+function players(){const q=$('q').value.trim().toLowerCase();$('pl').innerHTML=D.players.filter(p=>!q||(p.name+p.email).toLowerCase().includes(q)).slice(0,60).map(p=>`<div class="card flex flex-wrap items-center justify-between gap-2" data-email="${E(p.email)}"><span><b>${E(p.name)}</b> <span class="text-sm text-gray-600">${E(p.email)}</span> ${kycB(p.kyc)} ${p.excluded?'<span class="rounded bg-red-100 px-1.5 py-0.5 text-xs font-bold text-red-800">Self-excluded</span>':''}</span><span class="flex items-center gap-2"><b>${fmt(p.bal)}</b>${p.kyc==='approved'?'<button class="btn red krj !py-1 text-xs">Revoke KYC</button>':'<button class="btn kap !py-1 text-xs">Approve KYC</button>'}</span></div>`).join('')}
+async function act(fn){try{await fn();await load()}catch(e){alert(e.message)}}
+document.addEventListener('click',e=>{const c=e.target.closest('[data-id],[data-email]'),b=e.target;if(!c)return;const id=c.dataset.id,name=c.dataset.name;
+ if(b.closest('.cpy')){navigator.clipboard?.writeText(b.dataset.n);b.textContent='Copied';return}
+ if(b.closest('.dap')){const amt=+c.querySelector('.damt').value;if(confirm(`Credit ${fmt(amt)} to ${name}? Only do this if the money is in your account.`))act(()=>api('POST','/api/admin/deposits/'+id,{action:'approve',amount:amt}))}
+ else if(b.closest('.drj')){if(confirm(`Reject this deposit from ${name}?`))act(()=>api('POST','/api/admin/deposits/'+id,{action:'reject'}))}
+ else if(b.closest('.wpd')){if(!confirm(`Have you already sent ${fmt(+c.dataset.amt)} to ${name}? This cannot be undone.`))return;const note=prompt('Optional: your transfer reference','');if(note===null)return;act(()=>api('POST','/api/admin/withdrawals/'+id,{action:'paid',note}))}
+ else if(b.closest('.wrj')){if(confirm(`Reject and refund ${fmt(+c.dataset.amt)} to ${name}'s wallet?`))act(()=>api('POST','/api/admin/withdrawals/'+id,{action:'reject'}))}
+ else if(b.closest('.kap'))act(()=>api('POST','/api/admin/kyc',{email:c.dataset.email,status:'approved'}));
+ else if(b.closest('.krj'))act(()=>api('POST','/api/admin/kyc',{email:c.dataset.email,status:b.textContent.includes('Revoke')?'pending':'rejected'}))});
+$('open').onclick=async()=>{T=$('tok').value.trim();$('gerr').textContent='';try{await load();sessionStorage.setItem('lw_admin',T)}catch(e){if(!$('gerr').textContent)$('gerr').textContent=e.message}};
+$('tok').onkeydown=e=>{if(e.key==='Enter')$('open').click()};$('q').oninput=()=>D&&players();$('refresh').onclick=()=>act(async()=>{});$('lock').onclick=()=>lock();
+if(T)load().catch(()=>{});setInterval(()=>{if(T&&!document.hidden)load().catch(()=>{})},20000);
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Log in | LUDOWHOT</title>
+<title>Sign up | Ludowhot</title>
 <meta name="theme-color" content="#0cb35b">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <script>
-tailwind.config={theme:{extend:{fontFamily:{sans:['Figtree','system-ui','sans-serif'],head:['Archivo','system-ui','sans-serif']},colors:{sb:{DEFAULT:'#0cb35b',dark:'#066a34',deep:'#052e1a',ink:'#1[...]
+tailwind.config={theme:{extend:{fontFamily:{sans:['Figtree','system-ui','sans-serif'],head:['Archivo','system-ui','sans-serif']},colors:{sb:{DEFAULT:'#0cb35b',dark:'#066a34',deep:'#052e1a',ink:'#14201a',bar:'#18241d'}}}}}
 </script>
 <style>
 body{background:#052e1a;-webkit-font-smoothing:antialiased}
@@ -23,13 +23,17 @@ body{background:#052e1a;-webkit-font-smoothing:antialiased}
 .gbtn:disabled{opacity:.6}
 </style>
 </head><body class="font-sans text-sb-ink">
-<header class="bg-sb-bar text-white"><div class="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3"><a href="index.html" class="flex items-center gap-2 font-head text-2xl font-extrabold"><span class="grid h-8 w-8 place-items-center rounded-lg bg-sb text-lg">L</span><span class="max-[420px]:hidden">LUDOWHOT</span></a><div class="flex items-center gap-2 text-xs font-bold sm:text-sm"><button class="inst rounded-lg border border-white/30 px-3 py-1.5 hover:bg-white/10">Install app</button><a href="signup.html" class="gbtn rounded-lg px-3 py-1.5">Sign up</a></div></div></header>
-<main class="mx-auto grid max-w-md px-4 py-10"><div class="rounded-2xl bg-white p-6 sm:p-8"><h1 class="font-head text-3xl font-extrabold">Log in</h1><p class="mt-1 text-sm text-gray-600">Welcome back to LUDOWHOT.</p><div id="err" class="mt-3 min-h-[20px] text-sm font-medium text-red-600"></div><form id="f" novalidate><label class="mt-4 block text-sm font-semibold" for="em">Email</label><input id="em" type="email" required autocomplete="email" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5"><label class="mt-4 block text-sm font-semibold" for="pw">Password</label><input id="pw" type="password" required autocomplete="current-password" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5"><button id="go" class="gbtn mt-5 w-full rounded-lg py-3 font-bold">Log in</button></form><p class="mt-4 text-sm text-gray-600">New here? <a class="font-bold text-sb-dark underline" href="signup.html">Create an account</a></p></div></main>
+<header class="bg-sb-bar text-white"><div class="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3">
+<a href="index.html" class="flex items-center gap-2 font-head text-2xl font-extrabold"><span class="grid h-8 w-8 place-items-center rounded-lg bg-sb text-lg">L</span><span class="max-[420px]:hidden">LUDO<span class="text-sb">WHOT</span></span></a>
+<div class="flex items-center gap-2 text-xs font-bold sm:text-sm"><button class="inst rounded-lg border border-white/30 px-3 py-1.5 hover:bg-white/10">Install app</button><a href="login.html" class="rounded-lg px-3 py-1.5 hover:bg-white/10">Log in</a></div></div></header>
+<main class="mx-auto grid max-w-md px-4 py-10"><div class="rounded-2xl bg-white p-6 sm:p-8"><h1 class="font-head text-3xl font-extrabold">Create your account</h1><p class="mt-1 text-sm text-gray-600">Free to join. You start with ₦5,000 in demo funds.</p>
+<form id="f" novalidate><label class="mt-4 block text-sm font-semibold" for="un">Username</label><input id="un" type="text" required minlength="2" maxlength="20" autocomplete="username" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base"><label class="mt-4 block text-sm font-semibold" for="em">Email</label><input id="em" type="email" required autocomplete="email" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base"><label class="mt-4 block text-sm font-semibold" for="pw">Password (8+ characters)</label><input id="pw" type="password" required minlength="8" autocomplete="new-password" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5 text-base"><label class="mt-4 flex items-start gap-2 text-sm"><input id="age" type="checkbox" required class="mt-1 h-4 w-4"><span>I am 18 or older, or of legal age in my region.</span></label><p id="err" role="alert" class="mt-3 min-h-[1.25rem] text-sm font-semibold text-red-700"></p><button id="go" class="gbtn mt-2 w-full rounded-lg py-3 font-bold">Create account</button></form>
+<p class="mt-4 text-sm text-gray-600">Already have an account? <a class="font-bold text-sb-dark underline" href="login.html">Log in</a></p></div></main>
 <script src="auth.js"></script>
 <script>
 A.initInstall();A.me().then(u=>u&&location.replace(A.next()));
 const f=document.getElementById("f"),err=document.getElementById("err"),btn=document.getElementById("go");
-f.onsubmit=async e=>{e.preventDefault();err.textContent="";if(!f.checkValidity()){f.reportValidity();return}btn.disabled=true;try{await A.login(em.value.trim(),pw.value);location.href=A.next()}catch(x){err.textContent=x.message||"Unable to log in."}finally{btn.disabled=false}};
+f.onsubmit=async e=>{e.preventDefault();err.textContent="";if(!f.checkValidity()){f.reportValidity();return}btn.disabled=true;try{await A.signup(un.value.trim(),em.value.trim(),pw.value);location.href=A.next()}catch(x){err.textContent=x.message}btn.disabled=false};
 </script>
 </body>
 </html>

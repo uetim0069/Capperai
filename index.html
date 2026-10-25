@@ -43,6 +43,7 @@ body{background:#f2f5f0;-webkit-font-smoothing:antialiased}
 .wh .wf{margin-left:var(--m);transform:rotate(var(--r))}.wh .wf:first-child{margin-left:0}.wh .wf:not(.pl){filter:brightness(.8)}
 .wh .wf.pl{transform:translateY(-14px) rotate(var(--r));outline:2px solid #f3d98a;cursor:pointer}
 .pill{background:rgba(0,0,0,.45);border:1px solid #c9a24b;color:#f3d98a;border-radius:999px;padding:3px 14px;font-weight:700;font-size:13px}
+.ct{padding:8px 14px;border-radius:8px;font-weight:700;font-size:14px;border:1px solid rgba(255,255,255,.25)}.ct.on{background:#c4f25a;color:#052e1a;border-color:#c4f25a}
 .sp{display:grid;place-items:center;color:#5b2f33}
 /* whot */
 .wc,.wcs{width:52px;height:76px;border-radius:10px;background:#fff;border:2px solid #cfd8d3;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;line-height:1.1;transition:transform .15s}
@@ -107,11 +108,12 @@ body{background:#f2f5f0;-webkit-font-smoothing:antialiased}
         <button id="post" class="gbtn mt-3 w-full rounded-lg py-3 font-bold">Post challenge</button>
       </div>
       <div class="rounded-2xl border border-black/10 bg-white p-5">
-        <div class="flex items-center justify-between text-sm text-gray-600"><span>Your wallet</span><span class="rounded bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">Demo funds</span></div>
+        <div class="flex items-center justify-between text-sm text-gray-600"><span>Your wallet</span><span id="demotag" class="rounded bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-900">Demo funds</span></div>
         <div id="bal2" class="mt-1 font-head text-4xl font-extrabold">₦5,000</div>
         <div class="mt-2 flex justify-between text-sm"><span class="text-gray-600">In escrow</span><b id="esc">₦0</b></div>
         <button id="fund" class="mt-3 w-full rounded-lg border-2 border-sb-dark py-2.5 text-sm font-bold text-sb-dark hover:bg-sb/10">Add ₦5,000 demo funds</button>
-        <p class="mt-2 text-xs leading-snug text-gray-600">Demo funds only: payments are not connected yet. Matches and results are run by the game server.</p>
+        <div id="livebtns" class="mt-3 hidden grid-cols-2 gap-2"><button id="dep" class="gbtn rounded-lg py-2.5 text-sm font-bold">Deposit</button><button id="wdr" class="rounded-lg border-2 border-sb-dark py-2.5 text-sm font-bold text-sb-dark hover:bg-sb/10">Withdraw</button></div>
+        <p id="wnote" class="mt-2 text-xs leading-snug text-gray-600">Demo funds only: payments are not connected yet. Matches and results are run by the game server.</p>
       </div>
     </div>
   </div>
@@ -133,7 +135,7 @@ body{background:#f2f5f0;-webkit-font-smoothing:antialiased}
       <h2 class="font-head text-3xl font-extrabold">No opponent? Play the bot.</h2>
       <p class="mt-2 max-w-lg text-sm text-white/85">Same stakes, same payout. The bot follows the same rules as a person, with no hidden advantage, and is always labelled as a bot.</p>
       <div class="mt-4 flex flex-wrap gap-2" id="bg"><button class="chip on" data-g="Whot">Whot</button><button class="chip" data-g="Ludo">Ludo</button></div>
-      <div class="mt-2 flex flex-wrap gap-2" id="bs"><button class="chip" data-s="200">₦200</button><button class="chip on" data-s="500">₦500</button><button class="chip" data-s="1000">₦1,000</button><button class="chip" data-s="2000">₦2,000</button></div>
+      <div class="mt-2 flex flex-wrap gap-2" id="bs"><button class="chip" data-s="200">₦200</button><button class="chip" data-s="0">Free practice</button><button class="chip on" data-s="500">₦500</button><button class="chip" data-s="1000">₦1,000</button><button class="chip" data-s="2000">₦2,000</button></div>
     </div>
     <div class="text-center">
       <div class="text-xs font-bold text-white/70">You win</div>
@@ -159,7 +161,7 @@ body{background:#f2f5f0;-webkit-font-smoothing:antialiased}
 
 <footer class="bg-sb-bar px-4 py-10 text-xs leading-relaxed text-white/65">
   <div class="mx-auto max-w-6xl"><p class="font-head text-xl font-extrabold text-white">LUDO<span class="text-sb">WHOT</span></p>
-  <p class="mt-3 max-w-3xl">18+ or the legal age in your region. Stake only what you can afford to lose. If gambling is affecting you, contact a local support service. © 2026 Ludowhot. <button class="ht underline">How to play</button></p></div>
+  <p class="mt-3 max-w-3xl">18+ or the legal age in your region. Stake only what you can afford to lose. If gambling is affecting you, contact a local support service. © 2026 Ludowhot. <span id="lic"></span> <button class="ht underline">How to play</button></p></div>
 </footer>
 
 <!-- arena -->
@@ -200,6 +202,23 @@ body{background:#f2f5f0;-webkit-font-smoothing:antialiased}
 <div class="mb-6 text-center"><h2 id="tr-h" class="font-head text-3xl font-extrabold"></h2><p id="tr-p" class="mt-3 text-white/75"></p></div>
 <div id="tr-dots" class="mb-5 flex justify-center gap-2"></div>
 <button id="tr-next" class="w-full rounded-xl bg-[#c4f25a] py-3.5 font-bold text-sb-deep hover:bg-white">Next</button></div></div>
+<div id="cash" role="dialog" aria-modal="true" aria-label="Wallet" class="fixed inset-0 z-[55] hidden items-center justify-center bg-black/75 p-3"><div class="max-h-[92vh] w-full max-w-md overflow-y-auto rounded-2xl bg-sb-deep p-5 text-white">
+<div class="flex items-center justify-between"><h2 class="font-head text-2xl font-extrabold text-[#f3d98a]">Wallet</h2><button id="cash-x" class="px-2 py-1 text-white/70 hover:text-white">Close</button></div>
+<div class="mt-3 flex gap-2"><button class="ct on" data-t="dep">Deposit</button><button class="ct" data-t="wd">Withdraw</button><button class="ct" data-t="safe">Safer play</button></div>
+<div id="cp-dep" class="mt-4"><label class="text-sm font-semibold" for="dp-amt">Amount (₦)</label><input id="dp-amt" type="number" min="100" step="100" value="2000" class="mt-1 w-full rounded-lg bg-white/10 px-3 py-2.5 font-semibold text-white placeholder-white/40">
+<div class="mt-2 flex gap-2"><button class="qa rounded-lg border border-white/25 px-3 py-1.5 text-sm font-bold" data-a="1000">₦1,000</button><button class="qa rounded-lg border border-white/25 px-3 py-1.5 text-sm font-bold" data-a="2000">₦2,000</button><button class="qa rounded-lg border border-white/25 px-3 py-1.5 text-sm font-bold" data-a="5000">₦5,000</button><button class="qa rounded-lg border border-white/25 px-3 py-1.5 text-sm font-bold" data-a="10000">₦10,000</button></div>
+<button id="dp-go" class="mt-3 w-full rounded-xl bg-[#c4f25a] py-3 font-bold text-sb-deep hover:bg-white">Pay with Paystack</button><div id="dp-info" class="mt-4 hidden"></div><p id="dp-note" class="mt-2 text-xs text-white/60">You will be taken to Paystack to pay by card, bank transfer or USSD. Your balance updates as soon as the payment is confirmed.</p></div>
+<div id="cp-wd" class="mt-4 hidden"><p id="wd-kyc" class="text-sm text-white/80"></p><p id="wd-saved" class="mt-1 text-sm font-semibold"></p>
+<div id="wd-ps"><label class="mt-3 block text-sm font-semibold" for="wd-bank">Bank</label><select id="wd-bank" class="mt-1 w-full rounded-lg bg-white/10 px-3 py-2.5 font-semibold text-white placeholder-white/40"></select></div><div id="wd-man" class="hidden"><label class="mt-3 block text-sm font-semibold" for="wd-bn">Bank name</label><input id="wd-bn" maxlength="40" class="mt-1 w-full rounded-lg bg-white/10 px-3 py-2.5 font-semibold text-white placeholder-white/40"><label class="mt-3 block text-sm font-semibold" for="wd-an">Account name</label><input id="wd-an" maxlength="60" class="mt-1 w-full rounded-lg bg-white/10 px-3 py-2.5 font-semibold text-white placeholder-white/40"></div>
+<label class="mt-3 block text-sm font-semibold" for="wd-acct">Account number</label><input id="wd-acct" inputmode="numeric" maxlength="10" class="mt-1 w-full rounded-lg bg-white/10 px-3 py-2.5 font-semibold text-white placeholder-white/40">
+<button id="wd-save" class="mt-3 w-full rounded-xl border border-white/30 py-2.5 font-bold">Verify and save account</button>
+<label class="mt-4 block text-sm font-semibold" for="wd-amt">Withdraw (₦, minimum 500)</label><input id="wd-amt" type="number" min="500" step="100" class="mt-1 w-full rounded-lg bg-white/10 px-3 py-2.5 font-semibold text-white placeholder-white/40">
+<button id="wd-go" class="mt-3 w-full rounded-xl bg-[#c4f25a] py-3 font-bold text-sb-deep hover:bg-white">Withdraw</button><p class="mt-2 text-xs text-white/60">Large withdrawals are reviewed before they are sent.</p></div>
+<div id="cp-safe" class="mt-4 hidden"><label class="text-sm font-semibold" for="sf-lim">Daily deposit limit (₦)</label><input id="sf-lim" type="number" min="0" step="1000" class="mt-1 w-full rounded-lg bg-white/10 px-3 py-2.5 font-semibold text-white placeholder-white/40">
+<button id="sf-save" class="mt-2 w-full rounded-xl border border-white/30 py-2.5 font-bold">Save limit</button><p class="mt-1 text-xs text-white/60">Lowering a limit applies now. Raising it applies after 24 hours.</p>
+<label class="mt-5 block text-sm font-semibold" for="sf-ex">Take a break (self-exclusion)</label><select id="sf-ex" class="mt-1 w-full rounded-lg bg-white/10 px-3 py-2.5 font-semibold text-white placeholder-white/40"><option class="text-black" value="1">24 hours</option><option class="text-black" value="7">7 days</option><option class="text-black" value="30">30 days</option><option class="text-black" value="180">6 months</option><option class="text-black" value="365">1 year</option></select>
+<button id="sf-exgo" class="mt-2 w-full rounded-xl border border-[#ff8a8e] py-2.5 font-bold text-[#ff8a8e]">Exclude me</button><p class="mt-1 text-xs text-white/60">You cannot deposit or stake during a break, and it cannot be shortened.</p></div>
+<h3 class="mt-5 text-xs font-bold text-white/60">Recent transactions</h3><ul id="cash-tx" class="mt-2 space-y-1 text-sm"></ul></div></div>
 <div id="toast" role="status" aria-live="polite" class="toast pointer-events-none fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-sb-bar px-5 py-3 text-sm font-semibold text-white opacity-0"></div>
 
 <script src="auth.js"></script>

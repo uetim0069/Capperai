@@ -1,107 +1,30 @@
-# LUDOWHOT
+# Ludowhot
 
-LUDOWHOT is a mobile-first web app and progressive web app for playing Whot and Ludo with demo stakes, bot matches, and wallet-style gameplay. It combines a polished landing experience with challenge-based multiplayer game flow and a full installable PWA feel.
+Node 22+ server, no dependencies. Serves the site (`public/`) and runs accounts, wallet, escrow, matchmaking, Paystack payments and both games.
 
-## Overview
+    node server.js      # http://localhost:3000, demo mode (free ₦5,000, no real money)
+    npm test            # auth, escrow, matches, and payments (against a mock Paystack)
 
-LUDOWHOT is designed as a front-end prototype and demo app for a real-stakes gaming experience. Players can:
+## Going live with real money, manual payments (no payment provider)
+Set these environment variables. Deposits and withdrawals are then confirmed and paid by you from the admin page.
 
-- browse or post open challenges
-- play Whot or Ludo against another player
-- play against a bot when no opponent is available
-- track a demo wallet and escrow balance
-- install the app as a PWA from supported browsers
-- download an Android APK bundle
+| Variable | Purpose |
+|---|---|
+| `REAL_MONEY=1` | Turns on real-money mode (removes the free demo funds) |
+| `ADMIN_TOKEN` | Long random secret (30+ characters) for the admin page |
+| `PAY_BANK_NAME`, `PAY_ACCOUNT_NUMBER`, `PAY_ACCOUNT_NAME` | The bank account players send deposits to |
+| `PAY_NOTE` | Optional extra instruction shown to players |
+| `LICENCE_TEXT` | Shown in the footer |
+| `DATA_DIR` | Persistent disk path for db.json |
+| `REQUIRE_KYC=0` | Optional: let players withdraw without KYC approval (default: KYC required) |
+| `ALLOW_BOT_STAKES=1` | Optional: allow staked games against the bot |
 
-This repository contains the app UI, game logic, branding, and static assets needed to run the experience locally or deploy it to a static host.
+## Admin page
+Open `https://YOUR-DOMAIN/admin` and enter your `ADMIN_TOKEN`.
 
-## Features
+- **Deposits:** the player requests a deposit and gets a reference code (e.g. LW-K3P9TR) to put in their bank transfer. Check your bank, then Approve (you can change the amount if they sent a different sum) or Reject.
+- **Withdrawals:** the player's balance is deducted when they request. Send the money to the account shown, then tap Mark as paid. Reject refunds them.
+- **KYC:** players cannot withdraw until you approve them.
 
-- Responsive landing page and game dashboard
-- Whot match flow with card rules and defense selection
-- Ludo board flow with dice-based gameplay
-- Public lobby for challenge posting and acceptance
-- Bot mode for instant gameplay
-- Demo wallet and escrow logic
-- PWA install support
-- APK download option for Android users
-- Mobile-first UI with desktop compatibility
-
-## Project structure
-
-- `index.html` — primary game experience and landing page
-- `login.html` — login screen
-- `signup.html` — account creation screen
-- `auth.js` — authentication and install helpers
-- `app.js` — game logic, lobby, match flow, and rendering
-- `sw.js` — service worker for install/offline support
-- `manifest.webmanifest` — PWA metadata
-- `vercel.json` — deployment configuration
-- `capper-ai.apk` — Android APK build
-- `*.png` — branding, icons, and screenshots
-
-## Tech stack
-
-- HTML
-- CSS
-- JavaScript
-- Tailwind CSS via CDN
-- Progressive Web App manifest
-- Service worker
-- Static deployment hosting
-
-## Local development
-
-Because this is a static web app, you can run it from any local web server.
-
-### Python
-
-```bash
-cd LUDOWHOT
-python -m http.server 8000
-```
-
-Then visit:
-
-```text
-http://localhost:8000
-```
-
-### Alternative hosting
-
-You can deploy the repository root to:
-
-- Vercel
-- Netlify
-- GitHub Pages
-- any static file host
-
-## Deployment notes
-
-The app is configured as a static front-end project. For production use, you would typically add:
-
-- a real backend API
-- authentication and user persistence
-- secure wallet/account logic
-- server-side game validation
-- legal and compliance content for real-money play
-
-At the moment, the project is best treated as a prototype or demo application.
-
-## Screenshots
-
-The repository includes screenshots and app assets for both mobile and desktop layouts.
-
-## Notes
-
-- This app uses demo balances and simulated escrow behavior.
-- Match results and wallet logic are designed for demonstration purposes.
-- The project is intended for portfolio, demo, and prototype use.
-
-## License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
-## Contributing
-
-Pull requests are welcome. For larger changes, please open an issue first to discuss the feature or bug fix.
+## Paystack (optional, automatic payments)
+If you later get Paystack, set `PAYSTACK_SECRET_KEY` and `BASE_URL`, add the webhook `https://YOUR-DOMAIN/api/paystack/webhook`, and the site switches to automatic deposits and transfers.
