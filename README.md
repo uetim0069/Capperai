@@ -54,7 +54,7 @@ Because this is a static site, you can serve it from any local web server.
 Option 1: Python
 
 ```bash
-cd Capperai
+cd Ludowhot
 python -m http.server 8000
 ```
 
