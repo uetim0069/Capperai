@@ -1,6 +1,6 @@
-# Ludowhot
+# LUDOWHOT
 
-Ludowhot is a lightweight web app and PWA for playing Whot and Ludo-style matches with real-money-style stakes in a demo environment. The project includes a landing page, challenge lobby, bot match flow, wallet UI, Android APK download, and a mobile-friendly install experience.
+LUDOWHOT is a lightweight web app and PWA for playing Whot and Ludo-style matches with real-money-style stakes in a demo environment. The project includes a landing page, challenge lobby, bot match flow, wallet UI, Android APK download, and a mobile-friendly install experience.
 
 ## Overview
 
@@ -54,7 +54,7 @@ Because this is a static site, you can serve it from any local web server.
 Option 1: Python
 
 ```bash
-cd Ludowhot
+cd LUDOWHOT
 python -m http.server 8000
 ```
 

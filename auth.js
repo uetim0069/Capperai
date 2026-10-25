@@ -1,18 +1,35 @@
-const A={
- async req(m,u,b){const r=await fetch(u,{method:m,headers:b?{'content-type':'application/json'}:{},body:b?JSON.stringify(b):undefined,credentials:'same-origin'});const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Something went wrong. Try again.');return d},
- async me(){try{return await this.req('GET','/api/me')}catch{return null}},
- signup(name,email,password){return this.req('POST','/api/signup',{name,email,password})},
- login(email,password){return this.req('POST','/api/login',{email,password})},
- async logout(){try{await this.req('POST','/api/logout',{})}catch{}},
- next(){const n=new URLSearchParams(location.search).get('next');return n&&/^[\w.-]+\.html$/.test(n)?n:'index.html'},
- initInstall(cb){let dip=null;
-  addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e});
-  addEventListener('appinstalled',()=>{dip=null;cb&&cb()});
-  document.querySelectorAll('.inst').forEach(b=>b.onclick=async()=>{
-   if(dip){dip.prompt();await dip.userChoice;dip=null;return}
-   let d=document.getElementById('how');
-   if(!d){d=document.createElement('dialog');d.id='how';d.className='max-w-sm rounded-2xl p-6 text-sm backdrop:bg-black/70';
-    d.innerHTML='<h3 class="font-head text-2xl font-bold text-sb-dark">Install Ludowhot</h3><p class="mt-3"><b>Android (Chrome):</b> tap the ⋮ menu, then Install app or Add to Home screen. You can also download the APK from the home page.</p><p class="mt-2"><b>iPhone (Safari):</b> tap Share, then Add to Home Screen.</p><form method="dialog"><button class="gbtn mt-4 w-full rounded-lg py-2.5 font-bold">Got it</button></form>';document.body.appendChild(d)}
-   d.showModal()});
-  if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{})}
-};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sign up | LUDOWHOT</title>
+<meta name="theme-color" content="#0cb35b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config={theme:{extend:{fontFamily:{sans:['Figtree','system-ui','sans-serif'],head:['Archivo','system-ui','sans-serif']},colors:{sb:{DEFAULT:'#0cb35b',dark:'#066a34',deep:'#052e1a',ink:'#1[...]
+</script>
+<style>
+body{background:#052e1a;-webkit-font-smoothing:antialiased}
+.font-head{font-stretch:112%;letter-spacing:-.02em}
+:focus-visible{outline:3px solid #c4f25a;outline-offset:2px}
+.gbtn{background:#07813f;color:#fff;transition:background .15s,transform .1s}.gbtn:hover{background:#066a34}.gbtn:active{transform:translateY(1px)}
+.gbtn:disabled{opacity:.6}
+</style>
+</head><body class="font-sans text-sb-ink">
+<header class="bg-sb-bar text-white"><div class="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-3"><a href="index.html" class="flex items-center gap-2 font-head text-2xl font-extrabold"><span class="grid h-8 w-8 place-items-center rounded-lg bg-sb text-lg">L</span><span class="max-[420px]:hidden">LUDOWHOT</span></a><div class="flex items-center gap-2 text-xs font-bold sm:text-sm"><button class="inst rounded-lg border border-white/30 px-3 py-1.5 hover:bg-white/10">Install app</button><a href="login.html" class="rounded-lg px-3 py-1.5 hover:bg-white/10">Log in</a></div></div></header>
+<main class="mx-auto grid max-w-md px-4 py-10"><div class="rounded-2xl bg-white p-6 sm:p-8"><h1 class="font-head text-3xl font-extrabold">Create your account</h1><p class="mt-1 text-sm text-gray-600">Join LUDOWHOT and start playing.</p><div id="err" class="mt-3 min-h-[20px] text-sm font-medium text-red-600"></div><form id="f" novalidate><label class="mt-4 block text-sm font-semibold" for="un">Username</label><input id="un" type="text" required minlength="2" maxlength="20" autocomplete="username" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5"><label class="mt-4 block text-sm font-semibold" for="em">Email</label><input id="em" type="email" required autocomplete="email" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5"><label class="mt-4 block text-sm font-semibold" for="pw">Password</label><input id="pw" type="password" required minlength="6" autocomplete="new-password" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2.5"><button id="go" class="gbtn mt-5 w-full rounded-lg py-3 font-bold">Create account</button></form><p class="mt-4 text-sm text-gray-600">Already have an account? <a class="font-bold text-sb-dark underline" href="login.html">Log in</a></p></div></main>
+<script src="auth.js"></script>
+<script>
+A.initInstall();A.me().then(u=>u&&location.replace(A.next()));
+const f=document.getElementById("f"),err=document.getElementById("err"),btn=document.getElementById("go");
+f.onsubmit=async e=>{e.preventDefault();err.textContent="";if(!f.checkValidity()){f.reportValidity();return}btn.disabled=true;try{await A.signup(un.value.trim(),em.value.trim(),pw.value);location.href=A.next()}catch(x){err.textContent=x.message||"Unable to create account."}finally{btn.disabled=false}};
+</script>
+</body>
+</html>
